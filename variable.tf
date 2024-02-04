@@ -18,3 +18,15 @@ variable "subscription_id" {
   default = "9229e7d9-5723-4406-943c-a0b864598b61"
   
 }
+
+variable "location" {
+  type = string
+  default = "West Europe"
+  
+}
+
+variable "address_space" {
+  type = list(string)
+  default = ["10.0.0.0/22"]
+  
+}
