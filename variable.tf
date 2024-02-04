@@ -12,3 +12,9 @@ variable "tenant_id" {
   type = string
     default = null
 }
+
+variable "subscription_id" {
+  type = string
+  default = "9229e7d9-5723-4406-943c-a0b864598b61"
+  
+}
