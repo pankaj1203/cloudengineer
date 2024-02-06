@@ -11,7 +11,7 @@ terraform {
       resource_group_name  = "cloud-engineer-course"
       storage_account_name = "cloudenginnercourse"
       container_name       = "terraform-state"
-      key                  = "terraform.tfstate_narendra"
+      key                  = "terraform.tfstate"
   }
 }
 provider "azurerm" {
@@ -20,5 +20,5 @@ provider "azurerm" {
   client_id       = var.client_id
   client_secret   = var.client_secret
   tenant_id       = var.tenant_id
-  subscription_id = var.subscription_id
+  subscription_id = "9229e7d9-5723-4406-943c-a0b864598b61"
 }
