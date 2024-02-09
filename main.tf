@@ -11,4 +11,40 @@ module "virtual_network" {
   resource_group_name = module.resource_group.name
   subnet_name = "snet_001"
   address_prefixes = [ "10.0.0.0/22" ]
+  network_security_group_name = "nsg1"
+  rules = [
+  {
+      name                     = "allow-ssh",
+      priority                 = 100,
+      direction                = "Inbound",
+      access                   = "Allow",
+      protocol                 = "Tcp",
+      source_port_range        = "*",
+      destination_port_range   = "22",
+      source_address_prefix    = "*",
+      destination_address_prefix = "VirtualNetwork"
+  },
+  {
+      name                     = "allow-ftp",
+      priority                 = 101,
+      direction                = "Inbound",
+      access                   = "Allow",
+      protocol                 = "Tcp",
+      source_port_range        = "*",
+      destination_port_range   = "22",
+      source_address_prefix    = "*",
+      destination_address_prefix = "VirtualNetwork"
+  },
+  {
+     name                     = "allow-80",
+      priority                 = 103,
+      direction                = "Inbound",
+      access                   = "Allow",
+      protocol                 = "Tcp",
+      source_port_range        = "*",
+      destination_port_range   = "80",
+      source_address_prefix    = "*",
+      destination_address_prefix = "VirtualNetwork"
+  }
+ ]
   }
