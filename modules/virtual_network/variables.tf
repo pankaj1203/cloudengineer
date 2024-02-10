@@ -32,7 +32,7 @@ variable "resource_group_name" {
  }
 
  variable "rules" {
- type = object({
+ type = list(object({
     name                     = string
     priority                 = number
     direction                = string
@@ -42,7 +42,7 @@ variable "resource_group_name" {
     destination_port_range   = string
     source_address_prefix    = string
     destination_address_prefix = string
-  })
+  }))
  default =  null
 
  }
