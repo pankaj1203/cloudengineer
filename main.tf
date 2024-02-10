@@ -9,7 +9,7 @@ module "virtual_network" {
    virtual_network_name = "vnet_001"
    address_space = ["10.0.0.0/16"]
    resource_group_name = module.resource_group.name
-   subnet_name = "snet_001"
+   subnet_name = join("-", ["terraform", var.subnet_name])
    address_prefixes = [ "10.0.0.0/22" ]
    network_security_group_name = "nsg1"
    rules = [
@@ -65,6 +65,12 @@ default_node_pool = [{
   vm_size = "Standard_D2_v2"
 
 }]
+linux_os_config = [{
+    swap_file_size_mb = "500"
+       transparent_huge_page_defrag   = "always"
+      transparent_huge_page_enabled  = "always"
+  }
+  ]
 
   identity = [{
     type = "SystemAssigned"

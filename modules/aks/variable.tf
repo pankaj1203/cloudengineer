@@ -28,6 +28,17 @@ variable "default_node_pool" {
 default = null
 }
 
+variable "linux_os_config" {
+  type = list(object({
+      swap_file_size_mb = string
+      transparent_huge_page_defrag = string
+      transparent_huge_page_enabled = string
+    }))
+  
+  default = null
+}
+
+
 variable "identity" {
   type = list(object({
     type = string

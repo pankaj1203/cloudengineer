@@ -11,7 +11,17 @@ dynamic "default_node_pool" {
     name       = default_node_pool.value.name
     node_count = default_node_pool.value.node_count
     vm_size    = default_node_pool.value.vm_size
+    dynamic "linux_os_config" {
+    for_each = var.linux_os_config
+    content {
+      swap_file_size_mb = linux_os_config.value.swap_file_size_mb
+      transparent_huge_page_defrag   = linux_os_config.value.transparent_huge_page_defrag
+      transparent_huge_page_enabled  = linux_os_config.value.transparent_huge_page_enabled
+    }
   }
+  
+  }
+  
 } 
 
 dynamic "identity" {
