@@ -31,7 +31,7 @@ variable "resource_group_name" {
    
  }
 
- variable "rules" {
+ variable "security_rule" {
  type = list(object({
     name                     = string
     priority                 = number
@@ -43,7 +43,41 @@ variable "resource_group_name" {
     source_address_prefix    = string
     destination_address_prefix = string
   }))
- default =  null
+ default =  [
+   {
+       name                     = "allow-ssh",
+       priority                 = 100,
+       direction                = "Inbound",
+       access                   = "Allow",
+       protocol                 = "Tcp",
+       source_port_range        = "*",
+       destination_port_range   = "22",
+       source_address_prefix    = "*",
+       destination_address_prefix = "VirtualNetwork"
+   },
+   {
+       name                     = "allow-ftp",
+       priority                 = 101,
+       direction                = "Inbound",
+       access                   = "Allow",
+       protocol                 = "Tcp",
+       source_port_range        = "*",
+       destination_port_range   = "22",
+       source_address_prefix    = "*",
+       destination_address_prefix = "VirtualNetwork"
+   },
+   {
+      name                     = "allow-80",
+       priority                 = 103,
+       direction                = "Inbound",
+       access                   = "Allow",
+       protocol                 = "Tcp",
+       source_port_range        = "*",
+       destination_port_range   = "80",
+       source_address_prefix    = "*",
+       destination_address_prefix = "VirtualNetwork"
+   }
+  ]
 
  }
 

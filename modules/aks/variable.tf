@@ -20,23 +20,28 @@ variable "dns_prefix" {
   }
 
 variable "default_node_pool" {
-  type = list(object({
+  type = object({
     name = string
     node_count = number
     vm_size = string
-}))
-default = null
-}
-
-variable "linux_os_config" {
-  type = list(object({
+    linux_os_config = object({
       swap_file_size_mb = string
       transparent_huge_page_defrag = string
       transparent_huge_page_enabled = string
-    }))
-  
-  default = null
+    })
+  })
+default = null
 }
+
+# variable "linux_os_config" {
+#   type = list(object({
+#       swap_file_size_mb = string
+#       transparent_huge_page_defrag = string
+#       transparent_huge_page_enabled = string
+#     }))
+  
+#   default = null
+# }
 
 
 variable "identity" {
