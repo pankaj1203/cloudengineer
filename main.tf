@@ -5,39 +5,111 @@ module "resource_group" {
 }
 
 module "virtual_network" {
-  source = "./modules/virtual_network"
-   virtual_network_name = "vnet_001"
-   address_space = ["10.0.0.0/16"]
-   resource_group_name = module.resource_group.name
-   subnet_name = join("-", ["terraform", var.subnet_name])
-   address_prefixes = [ "10.0.0.0/22" ]
-   network_security_group_name = "nsg1"
+  source                      = "./modules/virtual_network"
+  virtual_network_name        = "vnet_001"
+  address_space               = ["10.0.0.0/16"]
+  resource_group_name         = module.resource_group.name
+  subnet_name                 = join("-", ["terraform", var.subnet_name])
+  address_prefixes            = ["10.0.0.0/22"]
+  network_security_group_name = "nsg1"
 }
 
-
- 
-  
 module "aks" {
-  source = "./modules/aks"
-  name = "aks1"
+  source              = "./modules/aks"
+  name                = "aks1"
   resource_group_name = module.resource_group.name
-  dns_prefix  = "dns1"
-default_node_pool = {
-  name = "nodepool1"
-  node_count = 1
-  vm_size = "Standard_D2_v2"
-  linux_os_config = {
-      swap_file_size_mb = "500"
-       transparent_huge_page_defrag   = "always"
-      transparent_huge_page_enabled  = "always"
+  dns_prefix          = "dns1"
+  default_node_pool = {
+    name       = "nodepool1"
+    node_count = 1
+    vm_size    = "Standard_D2_v2"
+    linux_os_config = {
+      swap_file_size_mb             = "500"
+      transparent_huge_page_defrag  = "always"
+      transparent_huge_page_enabled = "always"
+    }
+
   }
-
-}
-
-  
 
   identity = [{
     type = "SystemAssigned"
   }]
 }
+
+module "key_vault" {
+  source                      = "./modules/key_vault"
+  key_vault_name              = "key-vault1"
+  location                    = "West Europe"
+  resource_group_name         = module.resource_group.name
+  sku_name                    = "standard"
+  enabled_for_disk_encryption = true
+  tenant_id                   = "186eab92-5232-4892-ad0f-6546d74c7b53"
+  soft_delete_retention_days  = "7"
+  access_policy = [{
+    tenant_id = "186eab92-5232-4892-ad0f-6546d74c7b53"
+    object_id = "af12891b-68ba-4cd8-926e-9638561a0e8a"
+
+    key_permissions = [
+      "Get",
+    ]
+
+    secret_permissions = [
+      "Get",
+    ]
+
+    storage_permissions = [
+      "Get",
+    ]
+    },
+    {
+      tenant_id = "186eab92-5232-4892-ad0f-6546d74c7b53"
+      object_id = "af12891b-68ba-4cd8-926e-9638561a0e8a"
+
+      key_permissions = [
+        "Get",
+      ]
+
+      secret_permissions = [
+        "Get",
+      ]
+
+      storage_permissions = [
+        "Get",
+      ]
+    }
+  ]
+}
+
+
+module "storage_account" {
+  source = "./modules/storage_account"
+
+  storage_account_name     = "storageacc"
+  resource_group_name      = "resource_group_name"
+  location                 = "west europe"
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+  identity = {
+    type = "SystemAssigned"
+  }
+  blob_properties = {
+    versioning_enabled = true
+    delete_retention_policy = {
+      days = "7"
+    }
+    container_delete_retention_policy = {
+      days = "7"
+    }
+    cors_rule = {
+      allowed_headers    = ["*"]
+      allowed_methods    = ["GET", "HEAD", "POST", "PUT"]
+      allowed_origins    = ["https://example.com"]
+      exposed_headers    = ["*"]
+      max_age_in_seconds = 3600
+    }
+  }
+}
+
+
+
 

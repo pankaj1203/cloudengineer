@@ -8,10 +8,10 @@ terraform {
     }
   }
   backend "azurerm" {
-      resource_group_name  = "cloud-engineer-course"
-      storage_account_name = "cloudenginnercourse"
-      container_name       = "terraform-state"
-      key                  = "terraform.tfstate"
+    resource_group_name  = "cloud-engineer-course"
+    storage_account_name = "cloudenginnercourse"
+    container_name       = "terraform-state"
+    key                  = "terraform.tfstate"
   }
 }
 provider "azurerm" {
