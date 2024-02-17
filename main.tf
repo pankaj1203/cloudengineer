@@ -160,4 +160,35 @@ module "iot_hub" {
   }
 }
 
+module "active_directory" {
+  source = "./modules/active_directory"
 
+  name                = "active-directory"
+  location            = "West Europe"
+  resource_group_name = module.resource_group.name
+
+  domain_name           = "widgetslogin.net"
+  sku                   = "Enterprise"
+  filtered_sync_enabled = false
+
+  initial_replica_set = {
+    subnet_id = module.virtual_network.subnet_id
+  }
+
+  notifications = {
+    additional_recipients = ["notifyA@example.net", "notifyB@example.org"]
+    notify_dc_admins      = true
+    notify_global_admins  = true
+  }
+
+  security = [{
+    sync_kerberos_passwords = true
+    sync_ntlm_passwords     = true
+    sync_on_prem_passwords  = true
+  }]
+
+  # tags = [{
+  #   Environment = "prod"
+  # }]
+
+}
