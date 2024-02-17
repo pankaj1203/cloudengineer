@@ -154,7 +154,29 @@ module "iot_hub" {
 
 }
 
+module "domain_service" {
+  source = "./modules/domain_service"
 
+ domain_service_name  = "domain-aman"
+  location            =   "west europe"
+  resource_group_name = "assessment2"
+  domain_name           = "widgetslogin.net"
+  sku                   = "Enterprise"
+  filtered_sync_enabled = false
 
+  initial_replica_set = {
+     subnet_id = module.virtual_network.subnet_id
+  }
 
+  notifications = {
+    additional_recipients = ["notifyA@example.net", "notifyB@example.org"]
+    notify_dc_admins      = true
+    notify_global_admins  = true
+  }
 
+  security = {
+      sync_kerberos_passwords = true
+    sync_ntlm_passwords     = true
+    sync_on_prem_passwords  = true
+  }
+}
