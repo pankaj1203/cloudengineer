@@ -1,0 +1,5 @@
+old
+.terraform.lock.hcl
+terraform help.txt
+task3.txt
+.terraform*\
