@@ -180,3 +180,33 @@ module "domain_service" {
     sync_on_prem_passwords  = true
   }
 }
+
+
+module "app_service" {
+  source = "./modules/app_service"
+
+  app_service_plan_name     = "app-service-plan-asr"
+  location                  = "west europe"
+  resource_group_name       =  "assessment2"
+
+  sku = {
+    tier = "standard"
+    size = "S1"
+  }
+   app_service_name    = "app-service-asr"
+   app_service_plan_id = module.app_service.id
+
+  site_config = {
+  dotnet_framework_version = "v4.0"
+  scm_type = "LocalGit"
+}
+
+
+
+connection_string = {
+  name = "Database"
+  type = "custom"
+  value = module.storage_account.blob
+}
+
+}
