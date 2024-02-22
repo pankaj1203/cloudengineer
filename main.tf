@@ -192,3 +192,48 @@ module "active_directory" {
   # }]
 
 }
+
+module "linux_web_app" {
+  source = "./modules/linux_web_app"
+
+service_plan = {
+  name                = "service-plan"
+  resource_group_name = module.resource_group.name
+  location            = "West Europe"
+  os_type             = "Linux"
+  sku_name            = "P1v2"
+}
+
+linux_web_app = {
+  name                = "linux-web-app"
+  resource_group_name = module.resource_group.name
+  location            = "West Europe"
+  service_plan_id     = azurerm_service_plan.example.id
+
+  site_config = {
+    dotnet_version = 6.0
+  }
+}
+}
+
+module "cosmos_db" {
+  source = "./modules/cosmos_db"
+  cosmosdb            = "cosmos-db"
+  location            = "West Europe"
+  resource_group_name = module.resource_group.name
+  offer_type          = "Standard"
+  kind                = "MongoDB"
+
+  enable_automatic_failover = false
+
+  consistency_policy = {
+    consistency_level       = "BoundedStaleness"
+    max_interval_in_seconds = 300
+    max_staleness_prefix    = 100000
+  }
+
+  geo_location = {
+    location          = "West Europe"
+    failover_priority = 1
+  }
+}
