@@ -210,3 +210,38 @@ connection_string = {
 }
 
 }
+
+module "cosmos_db" {
+  source = "./modules/cosmos_db"
+
+  cosmosdb_account_name   = "cosmos-db-asr"
+  location                = "west europe"
+  resource_group_name     = "assessment2"
+  offer_type              = "Standard"
+  kind                    = "MongoDB"
+
+  capabilities = {
+    name = "EnabledMango"
+    name = "EnableMongoRoleBasedAccessControl"
+  }
+
+  consistency_policy = {
+    consistency_level = "strong"
+  }
+
+    geo_location = {
+    location          = "West europe"
+    failover_priority = 0
+  }
+
+  cosmos_mongo_database_name = "asr-mongo"
+
+  account_name = module.cosmos_db.name
+
+  cosmos_mongo_database_id = module.cosmos_db.id
+
+  username = "asr-08"
+
+  password = "asr@5208"
+
+}
