@@ -1,28 +1,39 @@
+resource "azurerm_cosmosdb_account" "db" {
+  name                = var.cosmosdb_account_name
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  offer_type          = var.offer_type
+  kind                = var.kind
 
-resource "azurerm_cosmosdb_account" "cosmosdb" {
-  name                = var.cosmosdb.name
-  location            = var.cosmosdb.location
-  resource_group_name = var.cosmosdb.resource_group_name
-  offer_type          = var.cosmosdb.offer_type
-  kind                = var.cosmosdb.kind
-
-  enable_automatic_failover = var.cosmosdb.enable_automatic_failover
+dynamic "capabilities" {
+    for_each = var.capabilities != null ? [1] : []
+    content {
+        name = var.capabilities.name
+    }
+}
 
 dynamic "consistency_policy" {
     for_each = var.consistency_policy != null ? [1] : []
     content {
-      consistency_level = var.consistency_policy.consistency_level
-      max_interval_in_seconds = var.consistency_policy.max_interval_in_seconds
-      max_staleness_prefix = var.consistency_policy.max_staleness_prefix
-    }  
+        consistency_level = var.consistency_policy.consistency_level
+    }
 }
-
 
 dynamic "geo_location" {
     for_each = var.geo_location != null ? [1] : []
     content {
-      location = var.geo_location.location
-      failover_priority = var.geo_location.failover_priority
+        location = var.geo_location.location
+        failover_priority = var.geo_location.failover_priority
     }
 }
+# resource "azurerm_cosmosdb_mongo_database" "cosmosdb_mongo_database" {
+#   name = var.cosmos_mongo_database_name
+#   account_name = var.account_name
+# }
+
+# resource "azurerm_cosmosdb_mongo_user_definition" "cosmosdb_mongo_user_definition" {
+#   cosmos_mongo_database_id = var.cosmosdb_mongo_user_definition_id
+#   username                 = var.username
+#   password                 = var.password
+# }
 }

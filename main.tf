@@ -193,47 +193,64 @@ module "active_directory" {
 
 }
 
-module "linux_web_app" {
-  source = "./modules/linux_web_app"
+module "app_service" {
+  source = "./modules/app_service"
 
-service_plan = {
-  name                = "service-plan"
-  resource_group_name = module.resource_group.name
-  location            = "West Europe"
-  os_type             = "Linux"
-  sku_name            = "P1v2"
-}
+  app_service_plan_name     = "app-service-plan-asr"
+  location                  = "west europe"
+  resource_group_name       =  "assessment2"
 
-linux_web_app = {
-  name                = "linux-web-app"
-  resource_group_name = module.resource_group.name
-  location            = "West Europe"
-  service_plan_id     = azurerm_service_plan.example.id
+  sku = {
+    tier = "standard"
+    size = "S1"
+  }
+   app_service_name    = "app-service-asr"
+   app_service_plan_id = module.app_service.id
 
   site_config = {
-    dotnet_version = 6.0
-  }
+  dotnet_framework_version = "v4.0"
+  scm_type = "LocalGit"
 }
+
+connection_string = {
+  name = "Database"
+  type = "custom"
+  value = module.storage_account.blob
+}
+
 }
 
 module "cosmos_db" {
   source = "./modules/cosmos_db"
-  cosmosdb            = "cosmos-db"
-  location            = "West Europe"
-  resource_group_name = module.resource_group.name
-  offer_type          = "Standard"
-  kind                = "MongoDB"
 
-  enable_automatic_failover = false
+  cosmosdb_account_name   = "cosmos-db-asr"
+  location                = "west europe"
+  resource_group_name     = "assessment2"
+  offer_type              = "Standard"
+  kind                    = "MongoDB"
+
+  capabilities = {
+    name = "EnabledMango"
+    name = "EnableMongoRoleBasedAccessControl"
+  }
 
   consistency_policy = {
-    consistency_level       = "BoundedStaleness"
-    max_interval_in_seconds = 300
-    max_staleness_prefix    = 100000
+    consistency_level = "strong"
   }
 
-  geo_location = {
+    geo_location = {
     location          = "West Europe"
-    failover_priority = 1
+    failover_priority = 0
   }
+
+  cosmos_mongo_database_name = "asr-mongo"
+
+  account_name = module.cosmos_db.account_name
+
+  cosmos_mongo_database_id = module.cosmos_db.cosmos_mongo_database_id
+
+  username = "asr-08"
+
+  password = "asr@5208"
+
 }
