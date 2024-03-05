@@ -89,3 +89,23 @@ variable "resource_group_name" {
   default = "nsg1"
    
  }
+
+variable "agic_name" {
+  type = string
+  default = null
+}
+
+variable "sku" {
+  type = string
+  default = null
+}
+
+variable "access_endpoint_type" {
+  type = string
+  default = null
+}
+
+variable "virtual_network_subnet_ids" {
+ type = list(string)
+ default = null
+}

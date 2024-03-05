@@ -34,6 +34,14 @@ module "aks" {
   identity = [{
     type = "SystemAssigned"
   }]
+
+  gateway_name = "ingressgateway"
+  subnet_id = module.virtual_network.subnet_id
+
+    user_node1        = "usernode"
+    kubernetes_cluster_id = module.aks.id
+    vm_size               = "Standard_DS2_v2"
+    node_count            =  2
 }
 
 module "key_vault" {
@@ -208,40 +216,5 @@ connection_string = {
   type = "custom"
   value = module.storage_account.blob
 }
-
-}
-
-module "cosmos_db" {
-  source = "./modules/cosmos_db"
-
-  cosmosdb_account_name   = "cosmos-db-asr"
-  location                = "west europe"
-  resource_group_name     = "assessment2"
-  offer_type              = "Standard"
-  kind                    = "MongoDB"
-
-  capabilities = {
-    name = "EnabledMango"
-    name = "EnableMongoRoleBasedAccessControl"
-  }
-
-  consistency_policy = {
-    consistency_level = "strong"
-  }
-
-    geo_location = {
-    location          = "West europe"
-    failover_priority = 0
-  }
-
-  cosmos_mongo_database_name = "asr-mongo"
-
-  account_name = module.cosmos_db.name
-
-  cosmos_mongo_database_id = module.cosmos_db.id
-
-  username = "asr-08"
-
-  password = "asr@5208"
 
 }

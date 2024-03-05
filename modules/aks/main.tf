@@ -29,4 +29,15 @@ dynamic "identity" {
     type = identity.value.type
   }
 } 
+ingress_application_gateway {
+  gateway_name = var.gateway_name
+  subnet_id = var.subnet_id
+}
+
+}
+resource "azurerm_kubernetes_cluster_node_pool" "user_node" {
+  name                  = var.user_node1
+  kubernetes_cluster_id = var.kubernetes_cluster_id
+  vm_size               = var.vm_size
+  node_count            = var.node_count
 }
