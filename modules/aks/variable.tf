@@ -51,3 +51,44 @@ variable "identity" {
   default = null
   }
 
+variable "user_node_pool" {
+  type = string
+  default = null
+}
+
+variable "node_pool" {
+  type = string
+  default = null
+}
+
+variable "kubernetes_cluster_id" {
+  type = string
+  default = null
+  }
+
+variable "vm_size" {
+  type = string
+  default = null
+}
+
+variable "node_count" {
+  type = number
+  default = null
+}
+
+variable "tags" {
+  type = object({
+    environment  = string
+  })
+  default = null
+}
+
+variable "gateway_name" {
+  type = string
+  default = null
+}
+
+variable "subnet_id" {
+  type = string
+  default = null
+}

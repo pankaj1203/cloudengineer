@@ -34,223 +34,195 @@ module "aks" {
   identity = [{
     type = "SystemAssigned"
   }]
-}
 
-module "key_vault" {
-  source                      = "./modules/key_vault"
-  key_vault_name              = "key-vault1"
-  location                    = "West Europe"
-  resource_group_name         = module.resource_group.name
-  sku_name                    = "standard"
-  enabled_for_disk_encryption = true
-  tenant_id                   = "186eab92-5232-4892-ad0f-6546d74c7b53"
-  soft_delete_retention_days  = "7"
-  access_policy = [{
-    tenant_id = "186eab92-5232-4892-ad0f-6546d74c7b53"
-    object_id = "af12891b-68ba-4cd8-926e-9638561a0e8a"
+  gateway_name          = "agic"
+  subnet_id             = module.virtual_network.subnet_id
+  user_node_pool        = "internal"
+  kubernetes_cluster_id = module.aks.id
+  vm_size               = "Standard_DS2_v2"
+  node_count            = 2
 
-    key_permissions = [
-      "Get",
-    ]
+} 
 
-    secret_permissions = [
-      "Get",
-    ]
+# module "key_vault" {
+#   source                      = "./modules/key_vault"
+#   key_vault_name              = "key-vault1"
+#   location                    = "West Europe"
+#   resource_group_name         = module.resource_group.name
+#   sku_name                    = "standard"
+#   enabled_for_disk_encryption = true
+#   tenant_id                   = "186eab92-5232-4892-ad0f-6546d74c7b53"
+#   soft_delete_retention_days  = "7"
+#   access_policy = [{
+#     tenant_id = "186eab92-5232-4892-ad0f-6546d74c7b53"
+#     object_id = "af12891b-68ba-4cd8-926e-9638561a0e8a"
 
-    storage_permissions = [
-      "Get",
-    ]
-    },
-    {
-      tenant_id = "186eab92-5232-4892-ad0f-6546d74c7b53"
-      object_id = "af12891b-68ba-4cd8-926e-9638561a0e8a"
+#     key_permissions = [
+#       "Get",
+#     ]
 
-      key_permissions = [
-        "Get",
-      ]
+#     secret_permissions = [
+#       "Get",
+#     ]
 
-      secret_permissions = [
-        "Get",
-      ]
+#     storage_permissions = [
+#       "Get",
+#     ]
+#     },
+#     {
+#       tenant_id = "186eab92-5232-4892-ad0f-6546d74c7b53"
+#       object_id = "af12891b-68ba-4cd8-926e-9638561a0e8a"
 
-      storage_permissions = [
-        "Get",
-      ]
-    }
-  ]
-}
+#       key_permissions = [
+#         "Get",
+#       ]
 
+#       secret_permissions = [
+#         "Get",
+#       ]
 
-module "storage_account" {
-  source = "./modules/storage_account"
-
-  storage_account_name     = "storageacc"
-  resource_group_name      = "resource_group_name"
-  location                 = "west europe"
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  identity = {
-    type = "SystemAssigned"
-  }
-  blob_properties = {
-    versioning_enabled = true
-    delete_retention_policy = {
-      days = "7"
-    }
-    container_delete_retention_policy = {
-      days = "7"
-    }
-    cors_rule = {
-      allowed_headers    = ["*"]
-      allowed_methods    = ["GET", "HEAD", "POST", "PUT"]
-      allowed_origins    = ["https://example.com"]
-      exposed_headers    = ["*"]
-      max_age_in_seconds = 3600
-    }
-  }
-}
-
-module "iot_hub" {
-  source = "./modules/iot_hub"
-
-  iot_hub_name                 = "iot-hub"
-  resource_group_name          = module.resource_group.name
-  location                     = "West Europe"
-  #local_authentication_enabled = false
-
-  sku = [{
-    name     = "S1"
-    capacity = "1"
-  }]
-
-  endpoint = [{
-    type                       = "AzureIotHub.StorageContainer"
-    connection_string          = module.storage_account.blob
-    name                       = "export"
-    batch_frequency_in_seconds = 60
-    max_chunk_size_in_bytes    = 10485760
-    container_name             = "terraform-state"
-    encoding                   = "Avro"
-    file_name_format           = "{iothub}/{partition}_{YYYY}_{MM}_{DD}_{HH}_{mm}"
-  }]
-
-  route = [{
-    name           = "export"
-    source         = "DeviceMessages"
-    condition      = "true"
-    endpoint_names = ["export"]
-    enabled        = true
-  }]
+#       storage_permissions = [
+#         "Get",
+#       ]
+#     }
+#   ]
+# }
 
 
-  enrichment = [{
-    key            = "tenant"
-    value          = "$twin.tags.Tenant"
-    endpoint_names = ["export", "export2"]
-  }]
+# module "storage_account" {
+#   source = "./modules/storage_account"
 
-  cloud_to_device = {
-    max_delivery_count = 30
-    default_ttl        = "PT1H"
-    feedback = {
-      time_to_live       = "PT1H10M"
-      max_delivery_count = 15
-      lock_duration      = "PT30S"
-    }
-  }
-}
+#   storage_account_name     = "storageacc"
+#   resource_group_name      = "resource_group_name"
+#   location                 = "west europe"
+#   account_tier             = "Standard"
+#   account_replication_type = "LRS"
+#   identity = {
+#     type = "SystemAssigned"
+#   }
+#   blob_properties = {
+#     versioning_enabled = true
+#     delete_retention_policy = {
+#       days = "7"
+#     }
+#     container_delete_retention_policy = {
+#       days = "7"
+#     }
+#     cors_rule = {
+#       allowed_headers    = ["*"]
+#       allowed_methods    = ["GET", "HEAD", "POST", "PUT"]
+#       allowed_origins    = ["https://example.com"]
+#       exposed_headers    = ["*"]
+#       max_age_in_seconds = 3600
+#     }
+#   }
+# }
 
-module "active_directory" {
-  source = "./modules/active_directory"
+# module "iot_hub" {
+#   source = "./modules/iot_hub"
 
-  name                = "active-directory"
-  location            = "West Europe"
-  resource_group_name = module.resource_group.name
+#   iot_hub_name                 = "iot-hub"
+#   resource_group_name          = module.resource_group.name
+#   location                     = "West Europe"
+#   #local_authentication_enabled = false
 
-  domain_name           = "widgetslogin.net"
-  sku                   = "Enterprise"
-  filtered_sync_enabled = false
+#   sku = [{
+#     name     = "S1"
+#     capacity = "1"
+#   }]
 
-  initial_replica_set = {
-    subnet_id = module.virtual_network.subnet_id
-  }
+#   endpoint = [{
+#     type                       = "AzureIotHub.StorageContainer"
+#     connection_string          = module.storage_account.blob
+#     name                       = "export"
+#     batch_frequency_in_seconds = 60
+#     max_chunk_size_in_bytes    = 10485760
+#     container_name             = "terraform-state"
+#     encoding                   = "Avro"
+#     file_name_format           = "{iothub}/{partition}_{YYYY}_{MM}_{DD}_{HH}_{mm}"
+#   }]
 
-  notifications = {
-    additional_recipients = ["notifyA@example.net", "notifyB@example.org"]
-    notify_dc_admins      = true
-    notify_global_admins  = true
-  }
+#   route = [{
+#     name           = "export"
+#     source         = "DeviceMessages"
+#     condition      = "true"
+#     endpoint_names = ["export"]
+#     enabled        = true
+#   }]
 
-  security = [{
-    sync_kerberos_passwords = true
-    sync_ntlm_passwords     = true
-    sync_on_prem_passwords  = true
-  }]
 
-  # tags = [{
-  #   Environment = "prod"
-  # }]
+#   enrichment = [{
+#     key            = "tenant"
+#     value          = "$twin.tags.Tenant"
+#     endpoint_names = ["export", "export2"]
+#   }]
 
-}
+#   cloud_to_device = {
+#     max_delivery_count = 30
+#     default_ttl        = "PT1H"
+#     feedback = {
+#       time_to_live       = "PT1H10M"
+#       max_delivery_count = 15
+#       lock_duration      = "PT30S"
+#     }
+#   }
+# }
 
-module "app_service" {
-  source = "./modules/app_service"
+# module "active_directory" {
+#   source = "./modules/active_directory"
 
-  app_service_plan_name     = "app-service-plan-asr"
-  location                  = "west europe"
-  resource_group_name       =  "assessment2"
+#   name                = "active-directory"
+#   location            = "West Europe"
+#   resource_group_name = module.resource_group.name
 
-  sku = {
-    tier = "standard"
-    size = "S1"
-  }
-   app_service_name    = "app-service-asr"
-   app_service_plan_id = module.app_service.id
+#   domain_name           = "widgetslogin.net"
+#   sku                   = "Enterprise"
+#   filtered_sync_enabled = false
 
-  site_config = {
-  dotnet_framework_version = "v4.0"
-  scm_type = "LocalGit"
-}
+#   initial_replica_set = {
+#     subnet_id = module.virtual_network.subnet_id
+#   }
 
-connection_string = {
-  name = "Database"
-  type = "custom"
-  value = module.storage_account.blob
-}
+#   notifications = {
+#     additional_recipients = ["notifyA@example.net", "notifyB@example.org"]
+#     notify_dc_admins      = true
+#     notify_global_admins  = true
+#   }
 
-}
+#   security = [{
+#     sync_kerberos_passwords = true
+#     sync_ntlm_passwords     = true
+#     sync_on_prem_passwords  = true
+#   }]
 
-module "cosmos_db" {
-  source = "./modules/cosmos_db"
+#   # tags = [{
+#   #   Environment = "prod"
+#   # }]
 
-  cosmosdb_account_name   = "cosmos-db-asr"
-  location                = "west europe"
-  resource_group_name     = "assessment2"
-  offer_type              = "Standard"
-  kind                    = "MongoDB"
+# }
 
-  capabilities = {
-    name = "EnabledMango"
-    name = "EnableMongoRoleBasedAccessControl"
-  }
+# module "app_service" {
+#   source = "./modules/app_service"
 
-  consistency_policy = {
-    consistency_level = "strong"
-  }
+#   app_service_plan_name     = "app-service-plan-asr"
+#   location                  = "west europe"
+#   resource_group_name       =  "assessment2"
 
-    geo_location = {
-    location          = "West Europe"
-    failover_priority = 0
-  }
+#   sku = {
+#     tier = "standard"
+#     size = "S1"
+#   }
+#    app_service_name    = "app-service-asr"
+#    app_service_plan_id = module.app_service.id
 
-  cosmos_mongo_database_name = "asr-mongo"
+#   site_config = {
+#   dotnet_framework_version = "v4.0"
+#   scm_type = "LocalGit"
+# }
 
-  account_name = module.cosmos_db.account_name
-
-  cosmos_mongo_database_id = module.cosmos_db.cosmos_mongo_database_id
-
-  username = "asr-08"
-
-  password = "asr@5208"
-
-}
+# connection_string = {
+#   name = "Database"
+#   type = "custom"
+#   value = module.storage_account.blob
+# }
+# }
